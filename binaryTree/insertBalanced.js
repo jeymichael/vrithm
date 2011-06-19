@@ -17,7 +17,7 @@ function insert(arr)
   var node = null;
   for (i = 0; i < count; i++) { 
     node = new item(Math.floor(Math.random() * 120));
-    insertNode(arr, arr[0], node);
+    insertNode(arr[0], node);
 
     sleep(2000);
     positionItems(arr);  // Generate x,y coordinates
@@ -25,7 +25,7 @@ function insert(arr)
   }
 }
 
-function insertNode(arr, parent, current)
+function insertNode(parent, current)
 {
   current.treesize = 1;
   if (parent.l != null || parent.r != null) { 
@@ -44,9 +44,9 @@ function insertNode(arr, parent, current)
     // Both sub-trees are present
     // Recurse down, on the smaller sub-tree
     if (parent.l.treesize < parent.r.treesize) {
-      insertNode(arr, parent.l, current);
+      insertNode(parent.l, current);
     } else {
-      insertNode(arr, parent.r, current);
+      insertNode(parent.r, current);
     }
     parent.treesize++;
     return 1;
@@ -66,7 +66,7 @@ function buildTree() {
   var node = null;
   for (i = 0; i < count; i++) { 
     node = new item(Math.floor(Math.random() * 120));
-    insertNode(arr, arr[0], node);
+    insertNode(arr[0], node);
 
     sleep(2000);
     positionItems(arr);  // Generate x,y coordinates
