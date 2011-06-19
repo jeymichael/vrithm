@@ -1,0 +1,155 @@
+<html>  
+  <head>  
+    <title>Sort Visual Comparison</title>  
+    <script type="text/javascript">  
+var WIDTH = 650;
+var HEIGHT = 550;
+var NUMITEMS = 50;
+function initCanvas() {
+  return setInterval(draw, 1);
+}
+function item(val) {
+  this.value = val;
+  this.x = this.y = 0;
+}
+item.prototype.drawMe = function (x, y) {
+  var canvas = document.getElementById('panel');  
+  if (canvas != null) { 
+  var ctx = canvas.getContext('2d');  
+  ctx.fillRect(x, y, this.value, 5);
+  }
+}
+function draw(){  
+  var canvas = document.getElementById('panel');  
+  var ctx = canvas.getContext('2d');  
+  ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+  ctx.fillStyle = "rgb(200,0,200)";  
+  drawItems(qSortData);
+  ctx.fillText('Quick Sort', 20+0, HEIGHT - 30);
+
+  ctx.fillStyle = "rgb(200,200,0)";  
+  drawItems(bSortData);
+  ctx.fillText('Bubble Sort', 20+150, HEIGHT - 30);
+
+  ctx.fillStyle = "rgb(0,200,200)";  
+  drawItems(hSortData);
+  ctx.fillText('Heap Sort', 20+300, HEIGHT - 30);
+
+  ctx.fillStyle = "rgb(200,200,200)";  
+  drawItems(iSortData);
+  ctx.fillText('Insertion Sort', 20+450, HEIGHT - 30);
+}  
+
+function cloneItems(arr, offset) {
+  var items = new Array();
+  var numItems = arr.length;
+  for (i=0; i<numItems; i++) {
+    items[i] = new item(gItems[i].value);
+    items[i].x = 20 + offset;
+    items[i].y = i*10 + 5;
+  }
+  return items;
+}
+
+function initItems() {
+  var items = new Array();
+  var numItems = NUMITEMS;
+  for (i=0; i<numItems; i++) {
+    items[i] = new item(Math.floor(Math.random() * 120));
+    items[i].x = 20;
+    items[i].y = i*10 + 5;
+  }
+  return items;
+}
+
+function drawItems(arr) {
+  var canvas = document.getElementById('panel');  
+  var ctx = canvas.getContext('2d');  
+  for (i=0; i<arr.length; i++) {
+    arr[i].drawMe(arr[i].x, i*10 + 5);
+  }
+}
+
+function sort() {
+  if (!gSorted) {
+  quickSorter.postMessage({'key': 'data', 'value': qSortData});
+  bubbleSorter.postMessage({'key': 'data', 'value': bSortData});
+  heapSorter.postMessage({'key': 'data', 'value': hSortData});
+  insertionSorter.postMessage({'key': 'data', 'value': iSortData});
+  gSorted = true;
+  } else {
+  }
+}
+
+function swapper(arr, left, right) {
+  var tmp = arr[left];
+  arr[left] = arr[right];
+  arr[right] = tmp;
+}
+
+function printResult(label, arr) {
+  var res = '';
+  for (i = 0; i < arr.length; i++) {
+    res = res + ' ' + arr[i].value;
+  }
+  console.log('' + label + ' REAL RESULT : ' + res);
+}
+
+    </script>  
+    <style type="text/css">  
+      canvas { border: 1px solid black; }  
+    </style>  
+  </head>  
+  <body>  
+    <canvas id="panel" width="650" height="550"></canvas>  
+    <script type="text/javascript">  
+initCanvas();
+var gSorted = false;
+var gItems = initItems();
+
+var qSortData = cloneItems(gItems, 0);
+var quickSorter = new Worker('quicksort.js');
+var bSortData = cloneItems(gItems, 150);
+var bubbleSorter = new Worker('bubblesort.js');
+var hSortData = cloneItems(gItems, 300);
+var heapSorter = new Worker('heapsort.js');
+var iSortData = cloneItems(gItems, 450);
+var insertionSorter = new Worker('insertionsort.js');
+
+function getData(type) {
+  if (type == 'bubble') return bSortData;
+  if (type == 'quick') return qSortData;
+  if (type == 'heap') return hSortData;
+  if (type == 'insertion') return iSortData;
+}
+function getLabel(type) {
+  if (type == 'bubble') return 'Bubble::';
+  if (type == 'quick') return 'Quick::';
+  if (type == 'heap') return 'Heap::';
+  if (type == 'insertion') return 'Insertion::';
+}
+
+function sortEventListener(e) {
+  var data = e.data;
+  if (data.key == 'msg' || data.key == 'debug') {
+    console.log('MSG : ', data.value);
+  } else if (data.key == 'swap') { 
+    sortData = getData(data.type);
+    console.log('SWAP : ', data.lvalue + '<==>' + data.rvalue);
+    swapper(sortData, data.lvalue, data.rvalue);
+    printResult(getLabel(data.type), sortData);
+    drawItems(sortData);
+  }
+}
+
+quickSorter.addEventListener('message', sortEventListener); 
+bubbleSorter.addEventListener('message', sortEventListener); 
+heapSorter.addEventListener('message', sortEventListener); 
+insertionSorter.addEventListener('message', sortEventListener); 
+sort();
+
+    </script>  
+  </body>  
+</html>  
+
