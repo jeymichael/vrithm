@@ -1,0 +1,66 @@
+<html>  
+  <head>  
+    <title> Tree </title>  
+    <script type="text/javascript">  
+
+var WIDTH = 750;
+var HEIGHT = 550;
+
+function start() {
+  treeInserter.postMessage({'key': 'data', 'value': null});
+}
+
+function drawTree(data) {
+    var output = data.split(" ");
+      //for (i=0; i<output.length; i++) {
+      //  console.log('TreeInserter drawTree ', +i+':' +output[i]);
+      //}
+
+    // each node has 4 metadata (x,y,value,treesize)
+    var len = (output.length-1)/4;
+
+    var canvas = document.getElementById('tree');  
+    var ctx = canvas.getContext('2d');  
+    if (canvas != null) { 
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+      for (i=0; i<len; i++) {
+        // X,Y: (output[i*4 + 0] + WIDTH/2, output[i*4 + 1] + 25);
+        // treesize, value : output[i*4 + 2], output[i*4 + 3]
+        var treesize = output[i*4 + 2];
+        var x = WIDTH/2 + parseInt(output[i*4 + 0]);
+        var y = 25 + parseInt(output[i*4 + 1]);
+        ctx.fillText(treesize, x, y);
+      }
+    }
+}
+
+    </script>  
+    <style type="text/css">  
+      canvas { border: 1px solid black; }  
+    </style>  
+  </head>  
+  <body>  
+    <canvas id="tree" width="750" height="550"></canvas>  
+    <script type="text/javascript">  
+
+  var treeInserter = new Worker('insertBalanced.js');
+  treeInserter.addEventListener('message', function(e) {
+  var data = e.data;
+  if (data.key == 'msg') {
+    console.log('TreeInserter MSG : ', data.value);
+  } else if (data.key == 'drawTree') { 
+    //console.log('TreeInserter drawTree :', data.value);
+    drawTree(data.value);
+  } else if (data.key == 'debug') { 
+    console.log('TreeInserter DEBUG : ', data.value);
+  } else if (data.key == 'data') { 
+    console.log('TreeInserter DATA : ', data.value);
+  }
+}, false);
+
+start();
+
+    </script>  
+  </body>  
+</html>  
+
