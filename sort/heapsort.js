@@ -72,6 +72,7 @@ self.addEventListener('message', function(e) {
       res = res + ' ' + arr[i].value;
     }
     self.postMessage({'key': 'msg', 'value': 'Heap Result: ' + res});
+    self.postMessage({'key': 'msg', 'type':'heap', 'value': 'DONE'});
   }
 
 }, false);

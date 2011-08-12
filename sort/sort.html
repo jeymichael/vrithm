@@ -5,6 +5,16 @@
 var WIDTH = 650;
 var HEIGHT = 550;
 var NUMITEMS = 50;
+
+// if console is not defined, e.g., 
+// Firebug console is not enabled or Non-Firefox browser
+if (typeof console == 'undefined') {
+  var console = {};
+  console.log = function(msg) {
+    return;
+  };
+}
+
 function initCanvas() {
   return setInterval(draw, 1);
 }
@@ -129,11 +139,17 @@ function getLabel(type) {
   if (type == 'heap') return 'Heap::';
   if (type == 'insertion') return 'Insertion::';
 }
-
+function terminate(type) {
+  if (type == 'bubble')  { bubbleSorter.terminate(); return; }
+  if (type == 'quick')  { quickSorter.terminate(); return; }
+  if (type == 'heap')  { heapSorter.terminate(); return; }
+  if (type == 'insertion')  { insertionSorter.terminate(); return; }
+}
 function sortEventListener(e) {
   var data = e.data;
   if (data.key == 'msg' || data.key == 'debug') {
     console.log('MSG : ', data.value);
+    if (data.value == 'DONE') terminate(data.type);
   } else if (data.key == 'swap') { 
     sortData = getData(data.type);
     console.log('SWAP : ', data.lvalue + '<==>' + data.rvalue);
@@ -143,10 +159,10 @@ function sortEventListener(e) {
   }
 }
 
-quickSorter.addEventListener('message', sortEventListener); 
-bubbleSorter.addEventListener('message', sortEventListener); 
-heapSorter.addEventListener('message', sortEventListener); 
-insertionSorter.addEventListener('message', sortEventListener); 
+quickSorter.addEventListener('message', sortEventListener, false); 
+bubbleSorter.addEventListener('message', sortEventListener, false); 
+heapSorter.addEventListener('message', sortEventListener, false); 
+insertionSorter.addEventListener('message', sortEventListener, false); 
 sort();
 
     </script>  

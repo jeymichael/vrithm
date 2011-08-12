@@ -58,6 +58,7 @@ self.addEventListener('message', function(e) {
       res = res + ' ' + arr[i].value;
     }
     self.postMessage({'key': 'msg', 'value': 'Quick Result: ' + res});
+    self.postMessage({'key': 'msg', 'type':'quick', 'value': 'DONE'});
   }
 
 }, false);

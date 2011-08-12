@@ -38,6 +38,7 @@ self.addEventListener('message', function(e) {
       res = res + ' ' + arr[i].value;
     }
     self.postMessage({'key': 'msg', 'value': 'Insertion Result: ' + res});
+    self.postMessage({'key': 'msg', 'type':'insertion', 'value': 'DONE'});
   }
 
 }, false);
